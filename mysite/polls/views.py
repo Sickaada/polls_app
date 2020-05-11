@@ -2,11 +2,10 @@
 from django.http import HttpResponse
 from .models import Question
 from django.template import loader
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from django.http import Http404
 
-def details(request, question_id):
-    return HttpResponse("You're looking at the question %s." %question_id)
+
 
 def results(request,question_id):
     return HttpResponse("You're looking at the result of question %s." %question_id)
@@ -23,10 +22,12 @@ def index(request):
     }
     return render(request,'polls/index.html', context)
 
-def detail(request, question_id):
-    try:
-        question = Question.objects.get(pk = question_id)
-    except Question.DoesNotExist:
-        raise Http404("The Question doesn't exist.")
-        return render(request, 'polls/details.html', {"question": question})
-
+def details(request, question_id):
+#   try:
+#       question = Question.objects.get(pk = question_id)
+#   except Question.DoesNotExist:
+#       raise Http404("The Question doesn't exist.")
+#    return render(request, 'polls/details.html', {"question": question})'''
+# Using the try and except block can couple the model layer and view layer
+    question = get_object_or_404(Question, pk = question_id )
+    return render(request, 'polls/details.html', {'question': question})
