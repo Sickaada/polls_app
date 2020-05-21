@@ -8,7 +8,7 @@ class Question(models.Model):
         return self.question_text
     def was_published_recently(self):
 # time handling in python
-         return self.pub_date >= timezone.now() - datetime.timedelta(days = 1)
+         return self.published_date >= timezone.now() - datetime.timedelta(days = 1)
 
 # since there can be more than one choice for question, we will use "foreign key" - creates many to one relationship 
 # use of on_delete = models.cascade --> if the question is deleted, the choices will be deleted automatically

@@ -1,0 +1,9 @@
+<h1> {{question.question_text}}</h1>
+<ul>
+    {% for options in question.options_set.all %}
+    <li>
+        {{ options.option_text1}} --> {{options.votes_count}} votes_count{{options.votes_count|pluralize}}
+    </li>
+    {% endfor %}
+</ul>
+<a href = "{% url 'polls:details' question.id %}"> Vote again ?</a>

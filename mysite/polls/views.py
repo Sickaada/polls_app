@@ -1,33 +1,45 @@
 # Sort of front end is written here
-from django.http import HttpResponse
-from .models import Question
+from django.http import HttpResponse,HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import render,get_object_or_404
-from django.http import Http404
+from django.urls import reverse
+from django.views import generic
+
+from .models import Question,options
+
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
+
+    def get_queryset(self):
+        return Question.objects.order_by('-published_date')[:5]
+
+class DetailsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/details.html'
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/results.html'
 
 
-
-def results(request,question_id):
-    return HttpResponse("You're looking at the result of question %s." %question_id)
-
-def vote(request,question_id):
-    return HttpResponse("You're voting on the question %s." %question_id)
-
-def index(request):
-    latest_question_list = Question.objects.order_by('-published_date')[:5]
-    
-    # following key will be rendered as value
+def votes_count(request,question_id):
+    question = get_object_or_404(Question,pk = question_id)
     context = {
-        "latest_question_list": latest_question_list
+        'question': question,
+        'error_message': "You didn't select a choice."
     }
-    return render(request,'polls/index.html', context)
+    try:
+        selected_option = question.options_set.get(pk=request.POST['options'])
+    except(KeyError,options.DoesNotExist):
+# Redisplaying the question voting form
+        return render(request, 'polls/details.html', context )
+    else:
+        selected_option.votes_count += 1
+        selected_option.save()
+    return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
-def details(request, question_id):
-#   try:
-#       question = Question.objects.get(pk = question_id)
-#   except Question.DoesNotExist:
-#       raise Http404("The Question doesn't exist.")
-#    return render(request, 'polls/details.html', {"question": question})'''
-# Using the try and except block can couple the model layer and view layer
-    question = get_object_or_404(Question, pk = question_id )
-    return render(request, 'polls/details.html', {'question': question})
+
+
+
+
