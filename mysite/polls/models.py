@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+import datetime
 # question_text is field of the model which is used as coloumn in database
 # models tells the whereabouts of our data in a app.
 class Question(models.Model):
@@ -7,8 +9,9 @@ class Question(models.Model):
     def __str__(self):
         return self.question_text
     def was_published_recently(self):
+        now = timezone.now()
 # time handling in python
-         return self.published_date >= timezone.now() - datetime.timedelta(days = 1)
+        return now -datetime.timedelta(days=1) <= self.published_date <= now
 
 # since there can be more than one choice for question, we will use "foreign key" - creates many to one relationship 
 # use of on_delete = models.cascade --> if the question is deleted, the choices will be deleted automatically
