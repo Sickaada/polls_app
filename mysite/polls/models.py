@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 import datetime
-# question_text is field of the model which is used as coloumn in database
+# question_text is field of the model which is used as column in database
 # models tells the whereabouts of our data in a app.
 class Question(models.Model):
     question_text = models. CharField(max_length=250 )
